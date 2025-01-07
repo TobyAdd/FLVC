@@ -1,0 +1,2 @@
+chmod +x setup_flvc.sh && ./setup_flvc.sh
+python flvc2mp4.py
