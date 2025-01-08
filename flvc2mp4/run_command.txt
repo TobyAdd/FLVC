@@ -1,2 +1,1 @@
-chmod +x setup_flvc.sh && ./setup_flvc.sh
-python flvc2mp4.py
+just copy context of sh file and paste in termux
