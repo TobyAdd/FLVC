@@ -1,8 +1,8 @@
-import lz4.frame
+import qoi
 import subprocess
 
-def decompress_frame(compressed_data):
-    return lz4.frame.decompress(compressed_data)
+def decode_qoi_frame(compressed_data):
+    return qoi.decode(compressed_data)
 
 def read_video_metadata(flvc_file_path):
     with open(flvc_file_path, 'rb') as f:
@@ -35,19 +35,22 @@ def process_flvc_to_mp4(flvc_file_path, mp4_file_path):
     ]
 
     with open(flvc_file_path, 'rb') as f:
-        f.seek(2 + 2 + 2 + 8)  # width (2) + height (2) + fps (2) + frame_count (8)
+        f.seek(2 + 2 + 2 + 8)
 
         with subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE) as proc:
             for _ in range(frame_count):
-                compressed_size = int.from_bytes(f.read(8), 'little')
-                compressed_frame_data = f.read(compressed_size)
-                decompressed_frame_data = decompress_frame(compressed_frame_data)
-                proc.stdin.write(decompressed_frame_data)
+                qoi_size = int.from_bytes(f.read(4), 'little')
+                qoi_data = f.read(qoi_size)
+                raw_rgb_data = decode_qoi_frame(qoi_data)
+                
+                if raw_rgb_data.size > 0:
+                    proc.stdin.write(raw_rgb_data)
 
             proc.stdin.close()
             proc.wait()
 
     print(f"Done! Video saved as {mp4_file_path}")
+
 
 flvc_file_path = input("Enter the path for the input file (example input.flvc): ")
 mp4_file_path = input("Enter the path for the output file (example output.mp4): ")
