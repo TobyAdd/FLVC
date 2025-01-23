@@ -1,4 +1,0 @@
-apt update -y && apt upgrade -y
-apt install -y python
-apt install -y ffmpeg
-pip install lz4
