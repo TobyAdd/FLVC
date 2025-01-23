@@ -1,1 +1,4 @@
-just copy context of sh file and paste in termux
+apt update -y && apt upgrade -y
+apt install -y python
+apt install -y ffmpeg
+pip install qoi
